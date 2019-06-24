@@ -1,5 +1,6 @@
 import sys
 import random
+import matplotlib.pyplot as plt
 
 WALL = "#"
 CANDY = "0"
@@ -32,7 +33,6 @@ class PacMan:
         file.close()
         for line in range(self.lines):
             self.grid[line] = self.grid[line].replace("\n", "")
-        self.show()
 
     def show(self):
         print()
@@ -61,22 +61,18 @@ def q_learn(pacman):
             if state != WALL and state != GHOST and state != CANDY:
                 ok = True
 
-        # pos = (3, 1)
         terminal = False
         while not terminal:
             rand = random.random()
-            print(rand, "\n", pos)
             action = U
             # random action
             if rand < pacman.epsilon:
-                print("Random action! ", rand)
                 action = map_action(random.randrange(0, 4))
                 next_pos, reward, terminal = take_action(pacman, pos, action)
 
             # q learning action
             else:
                 action, value = best(Q, pos[0], pos[1])
-                print("Best action is ", action, " with value: ", "{:.4f}".format(value))
                 next_pos, reward, terminal = take_action(pacman, pos, action)
 
             # compute q
@@ -92,7 +88,6 @@ def q_learn(pacman):
             pos = next_pos
 
         pacman.times -= 1
-
     output(Q, pacman)
 
 
@@ -108,7 +103,7 @@ def take_action(pacman, pos, action):
         new_pos = (pos[0], pos[1] + 1)
 
     next_state = pacman.grid[new_pos[0]][new_pos[1]]
-    print("Next State: ", next_state)
+
     if next_state == WALL:
         return pos, -1, False
     elif next_state == CANDY:
